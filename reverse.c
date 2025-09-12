@@ -2,55 +2,49 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main() {
-    char buffer[256];     // Buffer temporal para cada lectura
-    char *texto = NULL;   // Aquí guardaremos todo el texto
-    size_t total = 0;     // Tamaño acumulado
+int main(int argc, char *argv[]) {
+    if (argc > 3) { fprintf(stderr, "usage: reverse <input> <output>\n"); exit(1); }
 
-    // Lee entrada o también puede leer un .txt de esta manera: ./reverse < texto.txt
-    printf("Escribe texto (Ctrl+D para terminar en Linux / Ctrl+Z en Windows):\n");
-
-    // Repetimos hasta que no haya más líneas o el usuario termine la entrada
-    while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-
-        // Obtener la longitud del texto leído por fila, se activa cada vez que se da enter
-        size_t len = strlen(buffer); 
-
-        // Reservar más memoria (total + len + 1 para '\0'). El +1 es para el carácter nulo de fin de cadena
-        char *tmp = realloc(texto, total + len + 1);
-
-        // Verificar si realloc fue exitoso
-        if (!tmp) {
-            // Mensaje de error
-            perror("Error reservando memoria");
-            // Liberar memoria previamente asignada antes de salir
-            free(texto);
-            // Exit con error
-            return 1;
-        }
-        // Actualizar el puntero si realloc fue exitoso
-        texto = tmp;
-
-        // Copiar lo leído al final del texto acumulado
-        // memcpy(destino, origen, tamaño) copia memoria de un lugar a otro
-        memcpy(texto + total, buffer, len + 1); 
-
-        // Actualizar el tamaño total
-        total += len;
+    FILE *in = stdin, *out = stdout;
+    if (argc >= 2) {
+        in = fopen(argv[1], "r");
+        if (!in) { fprintf(stderr, "error: cannot open file '%s'\n", argv[1]); exit(1); }
+    }
+    if (argc == 3) {
+        if (strcmp(argv[1], argv[2]) == 0) { fprintf(stderr, "El archivo de entrada y salida deben diferir\n"); if (in != stdin) fclose(in); exit(1); }
+        out = fopen(argv[2], "w");
+        if (!out) { fprintf(stderr, "error: cannot open file '%s'\n", argv[2]); if (in != stdin) fclose(in); exit(1); }
     }
 
-    // Mostrar el texto completo leído
-    if (texto) {
-        printf("\n--- Texto completo leído ---\n%s", texto);
+    if (argc == 1) printf("Introduce texto (Ctrl+D en Linux/WSL, Ctrl+Z en Windows):\n");
 
-        // Liberar la memoria asignada
-        free(texto);
-    } else {
+    char *line = NULL; size_t cap = 0;
+    ssize_t r;
+    char **lines = NULL; size_t n = 0;
 
-        // Si no se ingresó texto
-        printf("No se ingresó texto.\n");
+    while ((r = getline(&line, &cap, in)) != -1) {
+        int has_nl = (r > 0 && line[r-1] == '\n');
+        size_t alloc = r + (has_nl ? 1 : 2);
+        char *copy = malloc(alloc);
+        if (!copy) { fprintf(stderr, "malloc failed\n"); free(line); exit(1); }
+        memcpy(copy, line, r);
+        if (has_nl) copy[r] = '\0';
+        else { copy[r] = '\n'; copy[r+1] = '\0'; }
+        char **tmp = realloc(lines, (n + 1) * sizeof(char *));
+        if (!tmp) { fprintf(stderr, "malloc failed\n"); free(copy); free(line); exit(1); }
+        lines = tmp; lines[n++] = copy;
     }
+    free(line);
 
-    // Salida exitosa
+    if (out == stdout && n > 0) fprintf(stdout, "\n");
+    size_t i = n;
+    while (i--) {
+        fprintf(out, "%s", lines[i]);
+        free(lines[i]);
+    }
+    free(lines);
+
+    if (in != stdin) fclose(in);
+    if (out != stdout) fclose(out);
     return 0;
 }

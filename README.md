@@ -1,8 +1,8 @@
-Nombres:
-Juan Manuel Restrepo
-Fredy Hoyos Cardenas
-Dorian Garcia
-
+Nombres:    
+Juan Manuel Restrepo    
+Fredy Hoyos Cardenas    
+Dorian Garcia    
+    
 Como usarlo:    
 
     1. Compilar el programa:

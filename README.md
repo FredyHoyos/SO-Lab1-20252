@@ -4,9 +4,10 @@ Fredy Hoyos Cardenas
 Dorian Garcia
 
 Como usarlo:    
-    1. Compilar el programa:
-        gcc -o reverse reverse.c
 
+    1. Compilar el programa:
+        gcc -o reverse reverse.c    
+        
     2. Usar de las siguientes formas:
 
        a) Leer desde teclado y mostrar invertido en pantalla:
@@ -41,8 +42,9 @@ Mejoras implementadas:
   * Memoria pre-asignada para reducir fragmentación.
 
 
-Desafíos encontrados y cómo se solucionaron:
-    --------------------------------------------
+Desafíos encontrados y cómo se solucionaron:    
+    --------------------------------------------    
+
     1. Lectura de líneas con diferentes longitudes:
        - Desafío: Manejar correctamente líneas muy largas o de tamaño variable sin causar desbordamientos de memoria.
        - Solución: Se utilizó getline(), que ajusta dinámicamente el tamaño del buffer de lectura según la longitud de cada línea.
@@ -66,4 +68,4 @@ Desafíos encontrados y cómo se solucionaron:
     6. Portabilidad entre sistemas operativos:
        - Desafío: En Linux se usa Ctrl+D y en Windows Ctrl+Z para finalizar la entrada estándar. Esto podía confundir a los usuarios.
        - Solución: Se añadió un mensaje explicativo indicando la combinación de teclas según el sistema.
-*/a.
+

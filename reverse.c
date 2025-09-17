@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 int main(int argc, char *argv[]) {
     if (argc > 3) { fprintf(stderr, "usage: reverse <input> <output>\n"); exit(1); }
 
@@ -34,7 +35,9 @@ int main(int argc, char *argv[]) {
         if (!tmp) { fprintf(stderr, "malloc failed\n"); free(copy); free(line); exit(1); }
         lines = tmp; lines[n++] = copy;
     }
+
     free(line);
+    
 
     if (out == stdout && n > 0) fprintf(stdout, "\n");
     size_t i = n;

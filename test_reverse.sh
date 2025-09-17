@@ -17,10 +17,10 @@ echo "unico" > "$INPUT"
 $PROG "$INPUT" "$OUTPUT"
 if diff -q "$INPUT" "$OUTPUT" >/dev/null; then pass "Caso 2: Una sola línea"; else fail "Caso 2: Una sola línea"; fi
 
-# 3. Una sola línea sin \n
+# 3. Una sola línea sin \n: convertimos a exadecimal od -An -t x1 y eliminamos espacios tr -d ' '. Salto de linea es 0a.
 printf "ultima" > "$INPUT"
 $PROG "$INPUT" "$OUTPUT"
-if [ "$(tail -c 1 "$OUTPUT")" = $'\n' ]; then pass "Caso 3: Línea sin salto"; else fail "Caso 3: Línea sin salto"; fi
+if [ "$(tail -c 1 "$OUTPUT"| od -An -t x1 | tr -d ' ')" = $'0a' ]; then pass "Caso 3: Línea sin salto"; else fail "Caso 3: Línea sin salto"; fi
 
 # 4. Líneas en blanco
 printf "primera\n\ntercera\n\n" > "$INPUT"
@@ -34,8 +34,8 @@ FIRST=$(head -n 1 "$OUTPUT")
 LAST=$(tail -n 1 "$OUTPUT")
 if [ "$FIRST" = "10000" ] && [ "$LAST" = "1" ]; then pass "Caso 5: Archivo muy largo"; else fail "Caso 5: Archivo muy largo"; fi
 
-# 6. Línea muy larga (1MB)
-yes "x" | head -c 1048576 > "$INPUT"
+# 6. Línea muy larga (1MB) 1048576
+head -c 1048576 /dev/zero | tr '\0' 'x' > "$INPUT"
 $PROG "$INPUT" "$OUTPUT"
 SIZE=$(wc -c < "$OUTPUT")
 if [ "$SIZE" -eq 1048577 ]; then pass "Caso 6: Línea muy larga"; else fail "Caso 6: Línea muy larga"; fi
@@ -53,8 +53,8 @@ if [[ "$ERROR" == *"usage: reverse"* ]]; then pass "Caso 8: Demasiados argumento
 ERROR=$($PROG no_existe.txt 2>&1)
 if [[ "$ERROR" == *"error: cannot open file 'no_existe.txt'"* ]]; then pass "Caso 9: Archivo inexistente"; else fail "Caso 9: Archivo inexistente"; fi
 
-# 10. Entrada interactiva (simulada con printf)
+# 10. Entrada interactiva (simulada con printf) analizamos sed -n '3p' ya que la primera es un mensaje del programa y la segunda es un salto de línea introducidos durante la ejecucion del programa.
 printf "hola\nmundo\n" | $PROG > "$OUTPUT"
-if [ "$(head -n 1 "$OUTPUT")" = "mundo" ]; then pass "Caso 10: Entrada interactiva"; else fail "Caso 10: Entrada interactiva"; fi
+if [ "$(sed -n '3p' "$OUTPUT")" = "mundo" ]; then pass "Caso 10: Entrada interactiva"; else fail "Caso 10: Entrada interactiva"; fi
 
 rm -f "$INPUT" "$OUTPUT"

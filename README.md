@@ -3,7 +3,7 @@ Juan Manuel Restrepo
 Fredy Hoyos Cardenas
 Dorian Garcia
 
-Como usarlo:
+Como usarlo:    
     1. Compilar el programa:
         gcc -o reverse reverse.c
 

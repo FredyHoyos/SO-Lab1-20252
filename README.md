@@ -2,6 +2,9 @@ Nombres:
 Juan Manuel Restrepo    
 Fredy Hoyos Cardenas    
 Dorian Garcia    
+
+video: https://www.youtube.com/watch?v=ITRSxMZH8TY    
+
     
 Como usarlo:    
 
